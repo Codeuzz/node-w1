@@ -1,4 +1,6 @@
 import { readFileSync } from "fs";
+import { configDotenv } from "dotenv";
+import { returnMention } from "./src/utils.js";
 
 import { createInterface } from "readline";
 const rl = createInterface({
@@ -28,7 +30,7 @@ students.forEach((student) => {
 
 function prompt() {
   rl.question(
-    `\n Que voulez-vous faire ?\n 1- Rechercher des informations sur un élève, tapez "eleve".\n 2- Rechercher des élèves potentiellement talentueux, tapez "talent.\n 3- Ajouter une note à un élève, tapez "note".\n Votre réponse: "`,
+    `\n Que voulez-vous faire ?\n 1- Rechercher des informations sur un élève, tapez "eleve".\n 2- Rechercher des élèves potentiellement talentueux, tapez "talent.\n 3- Ajouter une note à un élève, tapez "note".\n 4- Ajouter une mention à un élève, tapez "mention".\n Votre réponse: "`,
     (answer) => {
       if (answer.toLowerCase() === "eleve") {
         findStudentInfo();
@@ -36,6 +38,8 @@ function prompt() {
         return findTalentedStudents();
       } else if (answer.toLowerCase() === "note") {
         return addGradeToStudent();
+      } else if (answer.toLowerCase() === "mention") {
+        return addMentionToStudent();
       } else {
         console.log(
           'Veuillez choisir entre "eleve", "talent" et "note" seulement. '
@@ -137,5 +141,34 @@ const addGradeToStudent = () => {
     }
   );
 };
+
+const addMentionToStudent = () => {
+  rl.question(
+    `\nA quel étudiant voulez-vous ajouter une mention ?:\n`,
+    (nameAnswer) => {
+      const cleanedNameAnswer = nameAnswer.trim().toLowerCase();
+      const student = students.find(
+        (s) => s.name.toLowerCase() === cleanedNameAnswer
+      );
+
+      if (!student) {
+        console.log("Aucun élève ne porte ce nom.");
+        return addMentionToStudent();
+      }
+
+      const avgOfStudent = Math.floor(
+        student.notes.reduce((acc, num) => acc + num, 0) / student.notes.length
+      );
+
+      student.mention = returnMention(avgOfStudent);
+      console.log(student);
+      console.log(avgOfStudent, student.mention);
+
+      prompt();
+    }
+  );
+};
+
+configDotenv();
 
 prompt();
