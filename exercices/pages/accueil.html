@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title>Mon html</title>
+  </head>
+  <body>
+    <ul>
+      ${users.map((user) => `
+      <li>${user}</li>
+      `).join("")}
+    </ul>
+  </body>
+</html>

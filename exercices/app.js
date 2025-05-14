@@ -1,10 +1,21 @@
 import http from "node:http";
 import { shuffleUsers } from "../src/utils.js";
+import fs from "node:fs";
+import path from "node:path";
+import querystring from "node:querystring";
 
 const users = ["Alan", "Sophie", "Bernard", "Elie"];
 
+const dirname = import.meta.dirname;
+const pagesPath = path.join(dirname, "pages");
+const formPath = path.join(pagesPath, "form.html");
+
+let customUsers = [...users];
+
 const server = http.createServer((req, res) => {
   const url = req.url.replace("/", "");
+
+  const form = fs.readFileSync(formPath, { encoding: "utf8" });
 
   if (url === "favicon.ico") {
     res.writeHead(200, {
@@ -27,7 +38,9 @@ const server = http.createServer((req, res) => {
 				</head>
 				<body>
 					<ul>
-                        ${users.map((user) => `<li>${user}</li>`).join("")}
+                        ${customUsers
+                          .map((user) => `<li>${user}</li>`)
+                          .join("")}
                     </ul>
 				</body>
 			</html>
@@ -54,6 +67,40 @@ const server = http.createServer((req, res) => {
 				</body>
 			</html>
 		`);
+  }
+  if (url === "add" && req.method === "GET") {
+    const page = fs.readFileSync(path.join(pagesPath, "form.html"), {
+      encoding: "utf8",
+    });
+    res.writeHead(200, {
+      "Content-type": "text/html",
+    });
+    res.end(page);
+    return;
+  }
+
+  if (url === "add" && req.method === "POST") {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+    req.on("end", () => {
+      const data = querystring.parse(body);
+
+      if (!data.name || data.name.trim() === "") {
+        res.writeHead(401, { "Content-type": "text/plain" });
+        res.end("Le champs nom ne peut pas être vide");
+        return;
+      }
+
+      customUsers.push(data.name);
+      res.writeHead(301, {
+        Location: "/users",
+      });
+      res.end();
+      return;
+    });
+    return;
   }
 });
 
