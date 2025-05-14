@@ -69,7 +69,7 @@ const server = http.createServer((req, res) => {
 		`);
   }
   if (url === "add" && req.method === "GET") {
-    const page = fs.readFileSync(path.join(pagesPath, "form.html"), {
+    const page = fs.readFileSync(path.join(pagesPath, "form-add.html"), {
       encoding: "utf8",
     });
     res.writeHead(200, {
