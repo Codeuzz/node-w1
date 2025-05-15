@@ -3,6 +3,7 @@ import { shuffleUsers } from "../src/utils.js";
 import fs from "node:fs";
 import path from "node:path";
 import querystring from "node:querystring";
+import { renderUser } from "../exemple-pug.js";
 
 const users = ["Alan", "Sophie", "Bernard", "Elie"];
 
@@ -15,7 +16,7 @@ let customUsers = [...users];
 const server = http.createServer((req, res) => {
   const url = req.url.replace("/", "");
 
-  const form = fs.readFileSync(formPath, { encoding: "utf8" });
+  // const form = fs.readFileSync(formPath, { encoding: "utf8" });
 
   if (url === "favicon.ico") {
     res.writeHead(200, {
@@ -101,6 +102,14 @@ const server = http.createServer((req, res) => {
       return;
     });
     return;
+  }
+
+  if (url === "userPug") {
+    res.writeHead(200, {
+      "Content-type": "text/html; charset=utf-8",
+    });
+
+    res.end(renderUser());
   }
 });
 

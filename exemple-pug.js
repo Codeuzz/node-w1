@@ -27,6 +27,20 @@ else
 
 // const compileTemplate = pug.compileFile(viewPath);
 
+const userData = {
+  name: {
+    first: "Jean",
+    last: "Dupont",
+  },
+  age: 36,
+  birthdate: new Date("1986-04-18"),
+  location: {
+    zipcode: "77420",
+    city: "Champs-sur-Marne",
+  },
+  isAdmin: true,
+};
+
 pug.renderFile(
   path.join(viewPath, "exemple.pug"),
   {
@@ -41,3 +55,18 @@ pug.renderFile(
     console.log(data);
   }
 );
+
+export const renderUser = () => {
+  return pug.renderFile(
+    path.join(viewPath, "user-card.pug"),
+    {
+      pretty: true,
+      user: userData,
+    },
+    (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      return data;
+    }
+  );
+};
