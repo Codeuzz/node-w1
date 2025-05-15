@@ -1,0 +1,5 @@
+mixin menu(items)
+  ul
+    each item in items
+      li(class=item.isActive ? 'nav-active' : '')
+        a(href=item.path) #{item.title}
