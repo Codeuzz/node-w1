@@ -1,7 +1,7 @@
 import pug from "pug";
 import path from "node:path";
 import http from "node:http";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, URLSearchParams } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,19 +14,6 @@ const menuItems = [
   { path: "/references", title: "References", isActive: false },
   { path: "/contact-me", title: "Contact", isActive: false },
 ];
-
-// pug.renderFile(
-//   "view/layout/layout.pug",
-//   {
-//     menuItems,
-//     pretty: true,
-//   },
-//   (err, data) => {
-//     if (err) throw err;
-//     console.log("ici : ");
-//     console.log(data);
-//   }
-// );
 
 const server = http.createServer((req, res) => {
   const url = req.url.replace("/", "");
@@ -46,18 +33,58 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (url === "") {
+  if (url === "" || url.startsWith("?")) {
+    const hasSuccess = req.url.includes("success=1");
+
     res.writeHead(200, {
       "content-type": "text/html",
     });
 
     pug.renderFile(
       path.join(viewPath, "home.pug"),
-      { pretty: true, menuItems: menuItems },
+      { pretty: true, menuItems: menuItems, showToast: hasSuccess },
       (err, data) => {
         if (err) throw err;
         res.end(data);
-        console.log(data);
+        // console.log(data);
+      }
+    );
+    return;
+  }
+
+  if (req.method === "POST" && url === "contact-me") {
+    let body = "";
+
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+
+    req.on("end", () => {
+      const params = new URLSearchParams(body);
+      const email = params.get("email");
+      const message = params.get("message");
+
+      console.log("Formulaire reçu:", { email, message });
+
+      res.writeHead(302, { Location: "/?success=1" });
+      res.end();
+    });
+
+    return;
+  }
+
+  if (url === "contact-me") {
+    res.writeHead(200, { "Content-Type": "text/html" });
+    pug.renderFile(
+      path.join(viewPath, "contact.pug"),
+      { pretty: true, menuItems },
+      (err, data) => {
+        if (err) {
+          res.writeHead(500, { "Content-Type": "text/plain" });
+          res.end("Server error");
+          return;
+        }
+        res.end(data);
       }
     );
     return;
