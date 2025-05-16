@@ -1,0 +1,12 @@
+extends ./layout
+
+block content
+  h1 Modifier l'utilisateur
+  form(action=`/edit/${user.name}` method="POST" id="edit-form")
+    label(for="name") Nouveau nom :
+    input(type="text" name="name" value=user.name required)
+    br
+    label(for="birth") Date de naissance :
+    input(type="date" name="birth" value=user.birth required)
+    br
+    button(type="submit") Sauvegarder

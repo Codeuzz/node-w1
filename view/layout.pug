@@ -1,0 +1,14 @@
+doctype html
+html(lang="fr")
+    head
+        meta(charset="UTF-8")
+        title Students pug
+        link(rel="stylesheet" href="/css/style.css")
+        block stylesheet
+
+    body
+        header
+            include ./nav
+
+        main
+            block content

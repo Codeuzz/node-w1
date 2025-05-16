@@ -1,0 +1,14 @@
+extends ./layout
+
+block content
+  h1 Liste des utilisateurs
+  ul
+    each user in users
+      li
+        | #{user.name} (#{user.birth})
+        a(href=`/edit/${user.name}`) Modifier
+        |  
+        form(action=`/delete/${user.name}` method="POST" 
+         id="users-form"
+         style="display:inline")
+          button(type="submit") Supprimer
